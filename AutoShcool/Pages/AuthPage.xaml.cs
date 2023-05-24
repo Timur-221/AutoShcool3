@@ -12,6 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AutoShcool.DB;
+using AutoShcool.MyClass;
+using MongoDB.Driver;
 
 namespace AutoShcool.Pages
 {
@@ -20,14 +23,46 @@ namespace AutoShcool.Pages
     /// </summary>
     public partial class AuthPage : Page
     {
+        Account Account { get; set; }
+        MonD Mon { get; set; }
+
+        UserInfo UserInfo { get; set; }
+
         public AuthPage()
         {
             InitializeComponent();
-        }
+            Mon= new MonD();
+            Account = new Account();
+            UserInfo = new UserInfo();
 
-        private void LogNav(object sender, RoutedEventArgs e)
+        }
+        public void LogNav(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new AccStud());
+            Account.AdLogin = txtUsername.Text;
+            Account.AdPassword = txtPassword.Password;
+
+            bool isAccountValid = Mon.CheckDataExists(Account.AdLogin, Account.AdPassword);
+            if (isAccountValid)
+            {
+                NavigationService.Navigate(new AdminPage());
+            }
+            else
+            {
+                UserInfo.Login = txtUsername.Text;
+                UserInfo.Password = txtPassword.Password;
+
+                bool isStudentValid = Mon.CheckStudentExists(UserInfo.Login, UserInfo.Password);
+                if (isStudentValid)
+                {
+                    NavigationService.Navigate(new AccStud());
+                }
+                else
+                {
+                    MessageBox.Show("Неверные учетные данные!");
+                }
+            }
+
+            //NavigationService.Navigate(new AccStud());
         }
     }
 }
